@@ -8,6 +8,8 @@ clients. Examples of use cases include reporting data to Kafka from any
 frontend app built in any language, ingesting messages into a stream processing
 framework that doesn't yet support Kafka, and scripting administrative actions.
 
+This version adds a new Resource to connect to a Cassandra database using the koudera connector.
+
 Quickstart
 ----------
 
