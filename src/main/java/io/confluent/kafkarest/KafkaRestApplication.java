@@ -24,6 +24,7 @@ import javax.ws.rs.core.Configurable;
 import io.confluent.kafkarest.exceptions.ZkExceptionMapper;
 import io.confluent.kafkarest.resources.BrokersResource;
 import io.confluent.kafkarest.resources.ConsumersResource;
+import io.confluent.kafkarest.resources.HelloWorldResource;
 import io.confluent.kafkarest.resources.PartitionsResource;
 import io.confluent.kafkarest.resources.RootResource;
 import io.confluent.kafkarest.resources.TopicsResource;
@@ -83,10 +84,11 @@ public class KafkaRestApplication extends Application<KafkaRestConfig> {
     this.zkClient = zkClient;
     context = new Context(appConfig, mdObserver, producerPool, consumerManager);
     config.register(RootResource.class);
-    config.register(new BrokersResource(context));
-    config.register(new TopicsResource(context));
-    config.register(new PartitionsResource(context));
-    config.register(new ConsumersResource(context));
+   // config.register(new BrokersResource(context));
+    //config.register(new TopicsResource(context));
+    //config.register(new PartitionsResource(context));
+    //config.register(new ConsumersResource(context));
+    config.register(new HelloWorldResource(context));
   }
 
   @Override
