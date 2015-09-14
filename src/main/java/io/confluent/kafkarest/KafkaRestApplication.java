@@ -84,10 +84,10 @@ public class KafkaRestApplication extends Application<KafkaRestConfig> {
     this.zkClient = zkClient;
     context = new Context(appConfig, mdObserver, producerPool, consumerManager);
     config.register(RootResource.class);
-   // config.register(new BrokersResource(context));
-    //config.register(new TopicsResource(context));
-    //config.register(new PartitionsResource(context));
-    //config.register(new ConsumersResource(context));
+    config.register(new BrokersResource(context));
+    config.register(new TopicsResource(context));
+    config.register(new PartitionsResource(context));
+    config.register(new ConsumersResource(context));
     config.register(new HelloWorldResource(context));
   }
 
