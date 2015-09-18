@@ -30,6 +30,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 
 import io.confluent.kafkarest.Context;
 import io.confluent.rest.annotations.PerformanceMetric;
@@ -45,9 +46,18 @@ public class HelloWorldResource {
 
   public HelloWorldResource(Context ctx) {
     this.ctx = ctx;
-    this.dao = new HelloWorldDao("evo_pu");
+    this.dao = new HelloWorldDao(ctx.getConfig().getString("db"));
   }
 
+  @GET
+  @Path("/hello")
+  public String sayHello(@javax.ws.rs.core.Context SecurityContext sc) {
+    
+    String user = sc.getUserPrincipal().getName();
+    
+    return "Hola " + user;
+  }
+  
   @GET
   @Path("/find")
   @PerformanceMetric("hello-find")
@@ -64,7 +74,7 @@ public class HelloWorldResource {
   @GET
   @Path("/find/{dni}")
   @PerformanceMetric("hello-with-name")
-  public List<HelloResponse> findByName(@PathParam("dni") String dni) {
+  public HelloResponse findByName(@PathParam("dni") String dni) {
     // Use a configuration setting to control the message that's written. The name is extracted from
     // the query parameter "name", or defaults to "World". You can test this API with curl:
     // curl http://localhost:8080/hello

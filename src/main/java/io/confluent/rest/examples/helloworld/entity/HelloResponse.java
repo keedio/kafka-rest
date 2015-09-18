@@ -1,32 +1,19 @@
 package io.confluent.rest.examples.helloworld.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Entity
-@Table(name = "hello", schema = "evo@evo_pu")
+
 public class HelloResponse {
   @JsonProperty
-  @NotNull
-  @Column(name="nombre")
   private String nombre;
   @JsonProperty
-  @NotNull
-  @Column(name="apellido")
   private String apellido;
   @JsonProperty
-  @NotNull
-  @Id
-  @Column(name="dni")
+
   private String DNI;
-  @JsonProperty
-  @NotNull
-  @Column(name="email")
+
   private String email;
   
   public HelloResponse() { /* Jackson deserialization */ }

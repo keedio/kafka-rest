@@ -2,46 +2,55 @@ package io.confluent.rest.examples.helloworld.dao;
 
 import io.confluent.rest.examples.helloworld.entity.HelloResponse;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
 
-import com.impetus.client.cassandra.common.CassandraConstants;
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
+import com.datastax.driver.core.Session;
+
 
 public class HelloWorldDao {
 
-  public EntityManager em;
-  public EntityManagerFactory emf;
+  private Cluster cluster;
 
-  public HelloWorldDao(String persistenceUnitName) {
-    if (emf == null) {
-      Map<String, String> propertyMap = new HashMap<String, String>();
-      propertyMap.put(CassandraConstants.CQL_VERSION, CassandraConstants.CQL_VERSION_3_0);
-      emf = Persistence.createEntityManagerFactory(persistenceUnitName/*"cassandra_pu"*/, propertyMap);
-    }
+  public HelloWorldDao(String db) {
+    cluster = Cluster.builder().addContactPoint(db).build();
   }
   
   public HelloResponse save(HelloResponse response) {
-    em = emf.createEntityManager();
-    em.persist(response);
-    em.close();    
-    
+    Session session = cluster.connect("evo");
+    ResultSet rs = session.execute("INSERT INTO hello (nombre, apellido, email, DNI) values ("
+        + "','" + response.getNombre() 
+        + "','" + response.getApellido() 
+        + "','" + response.getEmail()
+        + "','" + response.getDNI()
+        + "')");
+     
     return response;
+
   }
   
   public List<HelloResponse> listAll() {
-    em = emf.createEntityManager();
-    Query q = em.createQuery("SELECT hr.nombre, hr.apellido, hr.email, hr.DNI FROM HelloResponse hr");
-    List<HelloResponse> responses = q.getResultList();
+    Session session = cluster.connect("evo");
+    ResultSet rs = session.execute("SELECT nombre, apellido, email, DNI FROM hello");
+    List<HelloResponse> res = new ArrayList<HelloResponse>();
+    Iterator<Row> it = rs.iterator();
     
-    return responses;
+    while(it.hasNext()) {
+      Row row = it.next();
+      HelloResponse aux = new HelloResponse(row.getString(0), row.getString(1), row.getString(3), row.getString(2));
+      res.add(aux);
+    }
+ 
+    return res;
   }
-  
+
+  /*
   public List<HelloResponse> findByName(String name) {
     em = emf.createEntityManager();
     Query q = em.createQuery("SELECT hr.nombre, hr.apellido, hr.email, hr.DNI FROM HelloResponse hr where hr.nombre=:name");
@@ -59,14 +68,21 @@ public class HelloWorldDao {
     
     return responses;
   }
-
-  public List<HelloResponse> findByDNI(String dni) {
-    em = emf.createEntityManager();
-    Query q = em.createQuery("SELECT hr.nombre, hr.apellido, hr.email, hr.DNI FROM HelloResponse hr where hr.DNI=:dni");
-    q.setParameter("dni", dni);
-    List<HelloResponse> responses = q.getResultList();
+  */
+  
+  public HelloResponse findByDNI(String dni) {
+    Session session = cluster.connect("evo");
+    ResultSet rs = session.execute("SELECT nombre, apellido, email, DNI FROM hello WHERE DNI=" + dni);
+    List<HelloResponse> res = new ArrayList<HelloResponse>();
+    Iterator<Row> it = rs.iterator();
     
-    return responses;
+    while(it.hasNext()) {
+      Row row = it.next();
+      HelloResponse aux = new HelloResponse(row.getString(0), row.getString(1), row.getString(3), row.getString(2));
+      res.add(aux);
+    }
+ 
+    return res.get(0);
   }  
 
 }
