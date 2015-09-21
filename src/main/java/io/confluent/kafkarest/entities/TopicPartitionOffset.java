@@ -17,9 +17,12 @@ package io.confluent.kafkarest.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.hibernate.validator.constraints.NotEmpty;
+
+
 
 import javax.validation.constraints.Min;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 public class TopicPartitionOffset {
 
